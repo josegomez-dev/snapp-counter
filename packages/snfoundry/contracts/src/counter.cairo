@@ -15,6 +15,7 @@ pub mod CounterContract {
     use starknet::{ContractAddress, get_caller_address, get_contract_address};
     use openzeppelin_access::ownable::OwnableComponent;
     use openzeppelin_token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
+    use contracts::utils::{strk_address, strk_to_fri};
     
     component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
 
@@ -111,8 +112,8 @@ pub mod CounterContract {
         }
 
         fn reset_counter(ref self: ContractState) {
-            let payment_amount: u256 = 1000000000000000000; // 1 STARK
-            let stark_token: ContractAddress = 0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d.try_into().unwrap();
+            let payment_amount: u256 = strk_to_fri(1); // 1 STARK
+            let stark_token: ContractAddress = strk_address();
 
             let caller = get_caller_address();
             let contract_address = get_contract_address();
