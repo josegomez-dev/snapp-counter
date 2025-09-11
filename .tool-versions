@@ -1,0 +1,20 @@
+# Node.js version for the project
+nodejs 20.18.0
+
+# Yarn version (as specified in packageManager)
+yarn 3.2.3
+
+# Rust version for Cairo/Starknet development
+rust 1.75.0
+
+# Scarb version for Cairo package management
+scarb 2.12.1
+
+# Starknet Foundry for testing and deployment
+starknet-foundry 0.25.0
+
+# Python version (required for some Cairo tooling)
+python 3.11.0
+
+# TypeScript version
+typescript 5.0.0
