@@ -1,10 +1,10 @@
-
 #[starknet::interface]
 trait ICounter<T> {
     fn get_counter(self: @T) -> u32;
     fn increase_counter(ref self: T);
     fn decrease_counter(ref self: T);
     fn set_counter(ref self: T, new_value: u32);
+    fn reset_counter(ref self: T);
 }
 
 #[starknet::contract]
@@ -12,8 +12,9 @@ mod CounterContract {
     use OwnableComponent::InternalTrait;
     use super::ICounter;
     use starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
-    use starknet::{ContractAddress, get_caller_address};
+    use starknet::{ContractAddress, get_caller_address, get_contract_address};
     use openzeppelin_access::ownable::OwnableComponent;
+    use openzeppelin_token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
     
     component!(path: OwnableComponent, storage: ownable, event: OwnableEvent);
 
@@ -105,6 +106,36 @@ mod CounterContract {
                 old_value: old_counter,
                 new_value: new_value,
                 reason: ChangeReason::Set,
+            };
+            self.emit(event)
+        }
+
+        fn reset_counter(ref self: ContractState) {
+            let payment_amount: u256 = 1000000000000000000; // 1 STARK
+            let stark_token: ContractAddress = 0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d.try_into().unwrap();
+
+            let caller = get_caller_address();
+            let contract_address = get_contract_address();
+            let dispatcher = IERC20Dispatcher { contract_address: stark_token };
+
+            let balance = dispatcher.balance_of(caller);
+            assert!(balance >= payment_amount, "Caller does not have enough STARK tokens to reset the counter");
+
+            let allowance = dispatcher.allowance(caller, contract_address);
+            assert!(allowance >= payment_amount, "Contract is not allowed to spend the caller's STARK tokens");
+
+            let owner = self.ownable.owner();
+            let success = dispatcher.transfer_from(caller, owner, payment_amount);
+            assert!(success, "Failed to transfer STARK tokens from caller to owner");
+
+            let current_counter = self.counter.read();
+            self.counter.write(0);
+
+            let event: CounterChanged = CounterChanged {
+                caller: get_caller_address(),
+                old_value: current_counter,
+                new_value: 0,
+                reason: ChangeReason::Reset,
             };
             self.emit(event)
         }

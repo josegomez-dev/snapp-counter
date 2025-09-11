@@ -7,7 +7,7 @@ const deployedContracts = {
   devnet: {
     CounterContract: {
       address:
-        "0x36ebee758873c01149f2486cc6dbbe5d107ba4137a37a3cc78110b09c6f791a",
+        "0x4b0e8dce621f723f59b54254f48fa0c7f0f576f29643bc14443521bdeafd801",
       abi: [
         {
           type: "impl",
@@ -52,6 +52,13 @@ const deployedContracts = {
                   type: "core::integer::u32",
                 },
               ],
+              outputs: [],
+              state_mutability: "external",
+            },
+            {
+              type: "function",
+              name: "reset_counter",
+              inputs: [],
               outputs: [],
               state_mutability: "external",
             },
@@ -231,7 +238,7 @@ const deployedContracts = {
         },
       ],
       classHash:
-        "0x2dd7ccdc6b3b1513a9c69af05be9bd249a6fb525c8d524d5456bed1e1a6d91a",
+        "0x63f802c99f7f715172b5281a6360243652d160802632e064b415a6593b9b39",
     },
   },
 } as const;
