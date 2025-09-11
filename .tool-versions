@@ -11,7 +11,9 @@ rust 1.75.0
 scarb 2.12.1
 
 # Starknet Foundry for testing and deployment
-starknet-foundry 0.25.0
+starknet-foundry 0.48.0
+
+starknet-devnet 0.4.3
 
 # Python version (required for some Cairo tooling)
 python 3.11.0
