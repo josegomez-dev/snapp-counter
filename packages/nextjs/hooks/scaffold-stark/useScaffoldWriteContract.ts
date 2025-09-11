@@ -61,18 +61,19 @@ export const useScaffoldWriteContract = <
       }
 
       if (!deployedContractData) {
-        console.error(
-          "Target Contract is not deployed, did you forget to run `yarn deploy`?",
-        );
-        return;
+        const errorMsg = `Target Contract "${contractName}" is not deployed, did you forget to run \`yarn deploy\`?`;
+        console.error(errorMsg, { contractName, targetNetwork: targetNetwork.id });
+        throw new Error(errorMsg);
       }
       if (!chain?.id) {
-        console.error("Please connect your wallet");
-        return;
+        const errorMsg = "Please connect your wallet";
+        console.error(errorMsg);
+        throw new Error(errorMsg);
       }
       if (chain?.id !== targetNetwork.id) {
-        console.error("You are on the wrong network");
-        return;
+        const errorMsg = `You are on the wrong network. Expected: ${targetNetwork.id}, Current: ${chain.id}`;
+        console.error(errorMsg);
+        throw new Error(errorMsg);
       }
 
       // we convert to starknetjs contract instance here since deployed data may be undefined if contract is not deployed
@@ -81,6 +82,14 @@ export const useScaffoldWriteContract = <
         deployedContractData.address,
       );
 
+      console.log("Preparing contract call:", {
+        contractName,
+        functionName,
+        contractAddress: deployedContractData.address,
+        args: newArgs,
+        chainId: chain.id
+      });
+
       const newCalls = deployedContractData
         ? [contractInstance.populate(functionName, newArgs as any[])]
         : [];
@@ -88,6 +97,12 @@ export const useScaffoldWriteContract = <
       try {
         return await sendTxnWrapper(newCalls as any[]);
       } catch (e: any) {
+        console.error("Contract call failed:", {
+          contractName,
+          functionName,
+          error: e.message,
+          contractAddress: deployedContractData.address
+        });
         throw e;
       }
     },
