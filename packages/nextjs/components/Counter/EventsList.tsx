@@ -3,6 +3,7 @@
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-stark/useScaffoldEventHistory";
 import { CHANGE_REASON_LABELS, ChangeReason } from "~~/utils/counterUtils";
 import { useState, useMemo, useCallback } from "react";
+import { extractReason } from "~~/utils/extractReason";
 
 interface CounterChangedEvent {
   caller: string;
@@ -55,90 +56,57 @@ export const EventsList = () => {
     }
   };
 
-  // Helper function to extract reason from enum object
-  const extractReason = (reasonObj: any): ChangeReason | null => {
-    if (typeof reasonObj === 'string') {
-      return reasonObj as ChangeReason;
-    }
-    if (typeof reasonObj === 'object' && reasonObj !== null) {
-      // Handle enum object like { Increase: {} } or { Decrease: {} }
-      const keys = Object.keys(reasonObj);
-      if (keys.length === 1 && ['Increase', 'Decrease', 'Reset', 'Set'].includes(keys[0])) {
-        return keys[0] as ChangeReason;
-      }
-    }
-    return null;
-  };
-
-  // Validate event data
-  const isValidEvent = useCallback((event: any): event is EventData => {
-    if (!event?.parsedArgs) return false;
-    
-    const { caller, old_value, new_value, reason } = event.parsedArgs;
-    const extractedReason = extractReason(reason);
-    
-    return typeof caller === 'string' &&
-           typeof old_value === 'number' &&
-           typeof new_value === 'number' &&
-           extractedReason !== null;
-  }, []);
-
   // Memoized filtered events
   const validEvents = useMemo(() => {
-    return events?.filter(isValidEvent) || [];
-  }, [events, isValidEvent]);
+    return events || [];
+  }, [events]);
 
   // Memoized stats calculation
   const stats = useMemo(() => {
+    // Ensure counts has these keys
     const counts = {
       increase: 0,
       decrease: 0,
       reset: 0,
-      set: 0
+      set: 0,
     };
 
-    validEvents.forEach(event => {
-      const reason = extractReason(event.parsedArgs.reason);
-      if (reason) {
-        switch (reason) {
-          case 'Increase':
-            counts.increase++;
-            break;
-          case 'Decrease':
-            counts.decrease++;
-            break;
-          case 'Reset':
-            counts.reset++;
-            break;
-          case 'Set':
-            counts.set++;
-            break;
-        }
+    validEvents.forEach((event) => {
+      const reasonName = extractReason(event.parsedArgs?.reason);
+
+      switch (reasonName) {
+        case 'Increase':
+          counts.increase++;
+          break;
+        case 'Decrease':
+          counts.decrease++;
+          break;
+        case 'Reset':
+          counts.reset++;
+          break;
+        case 'Set':
+          counts.set++;
+          break;
+        default:
+          // Unknown/unsupported variant; ignore or log
+          // console.warn('Unknown reason variant', event.parsedArgs?.reason);
+          break;
       }
     });
 
     return counts;
   }, [validEvents]);
 
-  // Debug logging - only in development and only when events change
-  useMemo(() => {
-    if (process.env.NODE_ENV === 'development' && events?.length) {
-      console.log("Events List Debug:", {
-        totalEvents: events.length,
-        validEvents: validEvents.length,
-        sampleEvent: validEvents[0],
-        sampleRawEvent: events[0],
-        stats,
-        invalidEvents: events.length - validEvents.length
-      });
-    }
-  }, [events, validEvents, stats]);
-
   return (
     <div className="card bg-base-200/50 shadow-xl p-6">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h3 className="text-2xl font-bold text-secondary">Counter Events History</h3>
+          <h3 className="text-2xl font-bold text-secondary h-10">Counter Events History
+            {isLoading && (
+              <span className="loading loading-spinner loading-lg text-secondary ml-2"></span>
+            )}
+          </h3>
+
           {validEvents && (
             <p className="text-sm text-base-content/60 mt-1">
               {validEvents.length} CounterChanged events found
@@ -170,11 +138,6 @@ export const EventsList = () => {
 
       {/* Fixed height container to prevent content jumping */}
       <div className="min-h-[400px] flex flex-col">
-        {isLoading && (
-          <div className="flex justify-center items-center flex-1">
-            <span className="loading loading-spinner loading-lg"></span>
-          </div>
-        )}
 
         {error && (
           <div className="alert alert-error">
@@ -238,9 +201,9 @@ export const EventsList = () => {
                         </span>
                       </div>
                       <div className="flex flex-col">
-                        <span className="font-semibold text-base-content/70">Transaction</span>
+                        <span className="font-semibold text-base-content/70">Reason</span>
                         <span className="font-mono text-xs" title={event.transaction_hash || 'N/A'}>
-                          {event.transaction_hash ? formatAddress(event.transaction_hash) : "N/A"}
+                          {reason}
                         </span>
                       </div>
                     </div>
@@ -266,7 +229,7 @@ export const EventsList = () => {
       </div>
 
       {/* Debug Stats Info - Development Only */}
-      {process.env.NODE_ENV === 'development' && validEvents.length > 0 && (
+      {validEvents.length > 0 && (
         <div className="mt-4 p-3 bg-base-300 rounded-lg text-xs">
           <div className="font-semibold mb-2">Debug: Event Data Validation</div>
           <div className="grid grid-cols-2 gap-2">
@@ -283,6 +246,7 @@ export const EventsList = () => {
               <div>Resets: {stats.reset}</div>
               <div>Sets: {stats.set}</div>
             </div>
+
           </div>
         </div>
       )}
@@ -321,3 +285,4 @@ export const EventsList = () => {
     </div>
   );
 };
+
