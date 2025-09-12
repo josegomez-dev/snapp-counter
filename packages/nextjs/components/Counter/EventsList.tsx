@@ -234,8 +234,6 @@ export const EventsList = () => {
           <div className="font-semibold mb-2">Debug: Event Data Validation</div>
           <div className="grid grid-cols-2 gap-2">
             <div>Total Events: {events?.length || 0}</div>
-            <div>Valid Events: {validEvents.length}</div>
-            <div>Invalid Events: {(events?.length || 0) - validEvents.length}</div>
             <div>Validation Rate: {validEvents.length > 0 ? Math.round((validEvents.length / (events?.length || 1)) * 100) : 0}%</div>
           </div>
           <div className="mt-3 pt-2 border-t border-base-400">
