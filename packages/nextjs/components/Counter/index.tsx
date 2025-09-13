@@ -21,21 +21,21 @@ export const Counter = () => {
 
         {/* Main Counter Display */}
         <div className="max-w-4xl mx-auto">
-          <div className="card p-8 mb-8">
+          <div className="card bg-base-100 shadow-xl p-8 mb-8">
             <CounterDisplay />
           </div>
-          
-          {/* Owner Panel - Only visible to owner */}
+
+          {/* Counter Actions */}
+          <div className="card bg-base-100 shadow-xl p-8 mb-8">
+            <CounterActions />
+          </div>
+
+          {/* Owner Panel */}
           <div className="mb-8">
             <OwnerPanel />
           </div>
 
-          {/* Counter Actions */}
-          <div className="card bg-base-200/50 shadow-xl p-6 mb-8">
-            <CounterActions />
-          </div>
-
-          {/* Events History */}
+          {/* Events List */}
           <EventsList />
         </div>
 

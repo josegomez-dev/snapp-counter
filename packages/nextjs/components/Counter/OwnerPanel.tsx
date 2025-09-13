@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-stark/useScaffoldWriteContract";
 import { useAccount } from "~~/hooks/useAccount";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-stark/useScaffoldReadContract";
+import { useDeployedContractInfo } from "~~/hooks/scaffold-stark/useDeployedContractInfo";
 import { notification } from "~~/utils/scaffold-stark";
 
 interface OwnerPanelProps {
@@ -26,8 +27,10 @@ export const OwnerPanel = ({ className = "" }: OwnerPanelProps) => {
     functionName: "get_counter",
   });
 
+  const { data: deployedContractData } = useDeployedContractInfo("CounterContract");
+
   // Contract write hook
-  const { sendAsync: setCounter, isLoading: isSetting } = useScaffoldWriteContract({
+  const { sendAsync: setCounter, status: setCounterStatus } = useScaffoldWriteContract({
     contractName: "CounterContract",
     functionName: "set_counter",
     args: [setValue ? parseInt(setValue) : 0],
@@ -121,7 +124,7 @@ export const OwnerPanel = ({ className = "" }: OwnerPanelProps) => {
                 key={value}
                 className="btn btn-sm btn-outline btn-accent"
                 onClick={() => handleSetValue(value)}
-                disabled={isSetting}
+                disabled={setCounterStatus === "pending"}
               >
                 {value}
               </button>
@@ -144,9 +147,9 @@ export const OwnerPanel = ({ className = "" }: OwnerPanelProps) => {
             <button
               className="btn btn-accent"
               onClick={handleCustomSet}
-              disabled={isSetting || !customValue || !isConnected || status === "connecting"}
+              disabled={setCounterStatus === "pending" || !customValue || !isConnected || status === "connecting"}
             >
-              {isSetting ? (
+              {setCounterStatus === "pending" ? (
                 <span className="loading loading-spinner loading-sm"></span>
               ) : (
                 "Set"
@@ -155,10 +158,35 @@ export const OwnerPanel = ({ className = "" }: OwnerPanelProps) => {
           </div>
         </div>
 
-        {/* Owner Info */}
-        <div className="text-xs text-base-content/50 bg-base-200 rounded p-2">
-          <div>Owner Address: {owner?.toString().slice(0, 6)}...{owner?.toString().slice(-4)}</div>
-          <div>Your Address: {address?.slice(0, 6)}...{address?.slice(-4)}</div>
+        {/* Contract & Owner Info */}
+        <div className="text-xs text-base-content/50 bg-base-200 rounded p-3">
+          <div className="font-semibold mb-2 text-base-content/70">Contract Details</div>
+          <div className="space-y-1">
+            <div>
+              <span className="font-semibold">Contract Address:</span>
+              <div className="font-mono text-xs break-all">
+                {deployedContractData?.address || "Not deployed"}
+              </div>
+            </div>
+            <div>
+              <span className="font-semibold">Owner Address:</span>
+              <div className="font-mono text-xs break-all">
+                {owner?.toString() || "Loading..."}
+              </div>
+            </div>
+            <div>
+              <span className="font-semibold">Your Address:</span>
+              <div className="font-mono text-xs break-all">
+                {address || "Not connected"}
+              </div>
+            </div>
+            <div className="pt-1 border-t border-base-content/20">
+              <span className="font-semibold">Status:</span>
+              <span className={`ml-1 badge badge-sm ${isOwner ? 'badge-success' : 'badge-warning'}`}>
+                {isOwner ? 'You are the owner' : 'You are not the owner'}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

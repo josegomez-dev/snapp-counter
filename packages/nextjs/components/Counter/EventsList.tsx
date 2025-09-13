@@ -173,8 +173,8 @@ export const EventsList = () => {
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-3 flex-wrap">
-                      <span className={`badge ${getReasonColor(reason || 'Increase')} badge-lg`}>
-                        {reason ? CHANGE_REASON_LABELS[reason] : 'Unknown'}
+                      <span className={`badge ${getReasonColor((reason as ChangeReason) || 'Increase')} badge-lg`}>
+                        {reason ? CHANGE_REASON_LABELS[reason as ChangeReason] : 'Unknown'}
                       </span>
                       <span className="text-sm text-base-content/60">
                         {formatTimestamp(event.block?.block_number)}

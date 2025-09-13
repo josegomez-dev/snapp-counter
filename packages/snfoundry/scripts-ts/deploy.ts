@@ -49,7 +49,7 @@ const deployScript = async (): Promise<void> => {
     contract: "CounterContract",
     constructorArgs: {
       init_value: 0,
-      owner: deployer.address,
+      owner: "0x07e7Ef290d991BCAa3EcB73737b383eCf6868d6F5a74808e9f4b7F99EE8849F4",
     },
   });
 };

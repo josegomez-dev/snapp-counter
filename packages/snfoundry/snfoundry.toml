@@ -1,0 +1,8 @@
+[profile.mainnet]
+account = "my_wallet"
+rpc_url = "https://starknet-mainnet.public.blastapi.io/rpc/v0_8"
+
+[account.my_wallet]
+address = "0x07e7Ef290d991BCAa3EcB73737b383eCf6868d6F5a74808e9f4b7F99EE8849F4"
+private_key = "0x0135986b5a9f0e92285708d60a0212c52e5a6783c9335a910bee0795093b978b"
+type = "argent"

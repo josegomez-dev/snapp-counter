@@ -42,4 +42,4 @@ const devnet = {
   },
 } as const satisfies chains.Chain;
 
-export const supportedChains = { ...chains, devnet, mainnetFork };
+export const supportedChains = { ...chains, devnet, mainnetFork, mainnet: chains.mainnet };
