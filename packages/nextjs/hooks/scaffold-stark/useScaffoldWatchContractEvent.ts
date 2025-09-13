@@ -111,7 +111,7 @@ export const useScaffoldWatchContractEvent = <
       keys = keys.slice(0, MAX_EVENT_KEYS);
 
       const rawResponseObject = await publicClient.getEvents({
-        chunk_size: 100,
+        chunk_size: 1000, // Increased chunk size to fetch more events at once
         address: deployedContractData?.address,
         from_block: { block_number: blockNumber },
         keys,

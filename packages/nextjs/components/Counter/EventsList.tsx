@@ -2,7 +2,7 @@
 
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-stark/useScaffoldEventHistory";
 import { CHANGE_REASON_LABELS, ChangeReason } from "~~/utils/counterUtils";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { extractReason } from "~~/utils/extractReason";
 
 interface CounterChangedEvent {
@@ -31,6 +31,14 @@ export const EventsList = () => {
     transactionData: true,
     watch: true,
   });
+
+  // Debug logging to help verify data fetching
+  useEffect(() => {
+    if (events) {
+      console.log(`[EventsList] Fetched ${events.length} events from block ${fromBlock.toString()}`);
+      console.log('[EventsList] Events data:', events);
+    }
+  }, [events, fromBlock]);
 
   const formatAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -119,6 +127,9 @@ export const EventsList = () => {
                 <span className="w-2 h-2 bg-success rounded-full animate-pulse"></span>
                 Live
               </span>
+              <span className="ml-2 text-xs text-base-content/50">
+                (From block {fromBlock.toString()})
+              </span>
             </p>
           )}
         </div>
@@ -133,6 +144,13 @@ export const EventsList = () => {
             onChange={(e) => setFromBlock(BigInt(e.target.value || 0))}
             placeholder="0"
           />
+          <button
+            className="btn btn-sm btn-outline"
+            onClick={() => setFromBlock(0n)}
+            title="Load all events from the beginning"
+          >
+            Load All
+          </button>
         </div>
       </div>
 

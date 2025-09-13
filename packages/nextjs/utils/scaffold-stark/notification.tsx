@@ -133,7 +133,7 @@ const Notification = ({
       />
     ),
     {
-      duration: status === "loading" ? Infinity : duration,
+      duration: status === "loading" ? 10000 : duration, // Auto-hide loading notifications after 10 seconds
       position,
     },
   );

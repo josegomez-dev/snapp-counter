@@ -1,6 +1,6 @@
 [profile.mainnet]
 account = "my_wallet"
-rpc_url = "https://starknet-mainnet.public.blastapi.io/rpc/v0_8"
+rpc_url = "https://starknet-mainnet.g.alchemy.com/v2/demo"
 
 [account.my_wallet]
 address = "0x07e7Ef290d991BCAa3EcB73737b383eCf6868d6F5a74808e9f4b7F99EE8849F4"

@@ -144,7 +144,7 @@ export const useScaffoldEventHistory = <
         }
         keys = keys.slice(0, MAX_KEYS_COUNT);
         const rawEventResp = await publicClient.getEvents({
-          chunk_size: 100,
+          chunk_size: 1000, // Increased chunk size to fetch more events at once
           keys,
           address: deployedContractData?.address,
           from_block: { block_number: Number(fromBlock || fromBlockUpdated) },

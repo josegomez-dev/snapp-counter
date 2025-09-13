@@ -108,8 +108,19 @@ export const useTransactor = (
         },
       );
       resetStates();
+    } else if (txStatus === "error") {
+      notification.error(
+        <TxnNotification
+          message="Transaction failed. Please try again."
+          blockExplorerLink={blockExplorerTxURL}
+        />,
+        {
+          icon: "❌",
+        },
+      );
+      resetStates();
     }
-  }, [txResult]);
+  }, [txResult, txStatus]);
 
   const writeTransaction = async (
     tx: Call[],
